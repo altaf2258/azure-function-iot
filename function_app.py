@@ -6,20 +6,7 @@ from datetime import datetime
 from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import ResourceExistsError
 
-
 app = func.FunctionApp()
-
-BLOB_CONNECTION_STRING = os.getenv('AzureWebJobsStorage')
-CONTAINER_NAME = "iot-data"
-
-blob_service_client = BlobServiceClient.from_connection_string(
-    BLOB_CONNECTION_STRING)
-container_client = blob_service_client.get_container_client(CONTAINER_NAME)
-
-try:
-    container_client.create_container()
-except ResourceExistsError:
-    pass
 
 
 @app.function_name(name="iot_hub_trigger")
@@ -31,6 +18,21 @@ except ResourceExistsError:
 def iot_hub_trigger(event: func.EventHubEvent):
 
     try:
+        # ---- MOVE ALL BLOB CODE INSIDE FUNCTION ----
+        BLOB_CONNECTION_STRING = os.getenv('AzureWebJobsStorage')
+        CONTAINER_NAME = "iot-data"
+
+        blob_service_client = BlobServiceClient.from_connection_string(
+            BLOB_CONNECTION_STRING)
+        container_client = blob_service_client.get_container_client(
+            CONTAINER_NAME)
+
+        try:
+            container_client.create_container()
+        except ResourceExistsError:
+            pass
+        # --------------------------------------------
+
         message = event.get_body().decode('utf-8')
         logging.info(f"Received message: {message}")
 
