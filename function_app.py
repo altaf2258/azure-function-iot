@@ -18,7 +18,14 @@ app = func.FunctionApp()
 def iot_hub_trigger(event: func.EventHubEvent):
 
     try:
-        # ---- MOVE ALL BLOB CODE INSIDE FUNCTION ----
+        message = event.get_body().decode('utf-8')
+
+        # ✅ THIS LINE PROVES GITHUB DEPLOY IS RUNNING
+        logging.info("===== THIS CODE IS RUNNING FROM GITHUB ACTIONS DEPLOY =====")
+
+        logging.info(f"Received message: {message}")
+
+        # ---- Blob setup INSIDE function (important) ----
         BLOB_CONNECTION_STRING = os.getenv('AzureWebJobsStorage')
         CONTAINER_NAME = "iot-data"
 
@@ -31,10 +38,7 @@ def iot_hub_trigger(event: func.EventHubEvent):
             container_client.create_container()
         except ResourceExistsError:
             pass
-        # --------------------------------------------
-
-        message = event.get_body().decode('utf-8')
-        logging.info(f"Received message: {message}")
+        # ------------------------------------------------
 
         try:
             data = json.loads(message)
