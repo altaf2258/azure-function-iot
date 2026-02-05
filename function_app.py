@@ -58,3 +58,6 @@ def iot_hub_trigger(event: func.EventHubEvent):
 
     except Exception as e:
         logging.error(f"Error: {e}")
+
+# FORCE_COMMIT_TEST
+
